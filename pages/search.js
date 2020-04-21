@@ -1,10 +1,10 @@
 import { withRouter } from 'next/router'
 import { Row, Col, List, Pagination } from 'antd'
 import Link from 'next/link'
-import Router from 'next/router'
-import { memo, isValidElement } from 'react'
+import { memo, isValidElement, useEffect } from 'react'
 
 import Repo from '../components/Repo'
+import { cacheArray } from '../lib/repo-basic-cache'
 
 const api = require('../lib/api')
 
@@ -60,10 +60,18 @@ function nonp() {}
 
 const per_page = 20
 
+const isServer = typeof window === 'undefined'
 function Search({ router, repos }) {
 
     const { ...querys } = router.query
     const { lang, sort, order, page } = router.query
+
+    useEffect(() => {
+        if (!isServer) {
+            cacheArray(repos.items)
+        } 
+    })
+    
 
     return (
         <div className="root">
